@@ -1,25 +1,44 @@
 import yfinance as yf
 import yahoo_fin.stock_info as si
-import json
-"""
+import multiprocessing
+import time
+from Alert import *
+from Price import *
+
 def usage():
-  print("
-"""
+  ''' Prints all usages of TickerBell '''
+  print("")
+  print("USAGE:")
+  print("    quit")
+  print("    price [ticker]")
+  print("    alert create [ticker] [price]")
+  print("    alert start")
+  print("    alert stop")
+  print("    alert print")
+  print("")
 
 def main():
-  inpt = ""
-  print("Enter 'quit' to terminate")
+  # Introduction Message and Input
+  print("*****  Welcome to TickerBell  *****\n")
+  usage()
+  print(">> ", end = ' ')
+  inpt = input()
+  
+  # Input Loop
   while inpt != "quit":
-    print("Ticker Symbol:", end = ' ')
+    args = inpt.split(' ')
+    if args[0] == "price":
+      printPrice(inpt)
+    elif args[0] == "alert":
+      if handleAlert(inpt) == -1:
+        usage()
+    elif args[0] != "quit":
+      print("Invalid Input")
+      usage()
+    print(">> ", end = ' ')
     inpt = input()
-    if inpt != "quit":
-      try: 
-        price = si.get_live_price(inpt)
-        print("{0} Price: {1:.4f}".format(inpt, price))
-      except:
-        print("Ticker Symbol does not exist")
-    else:
-      print("\nThank you for using TickerBell\n")
+    
+  print("\nThank you for using TickerBell\n")
       
 if __name__ == "__main__":
     # execute only if run as a script
