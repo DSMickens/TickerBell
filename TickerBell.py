@@ -6,7 +6,7 @@ from Alert import *
 from Price import *
 
 def usage():
-  ''' Prints all usages of TickerBell '''
+  """Prints all usages of TickerBell"""
   print()
   print("USAGE:")
   print("    quit")
@@ -23,6 +23,7 @@ def usage():
   print()
 
 def printBanner():
+  """prints the TickerBell welcome banner""" 
   print()
   print("         __________                           _____               ")
   print("        |___    ___|                         |  _  \        _  _  ")
@@ -35,6 +36,7 @@ def printBanner():
   print()
 
 def main():
+
   # Introduction Message and Input
   printBanner()
   usage()
@@ -43,15 +45,21 @@ def main():
   
   # Input Loop
   while inpt != "quit":
+  
     args = inpt.split(' ')
-    if args[0] == "price":
+    cmd = args[0]
+    
+    if ( cmd == "price" ):
       printPrice(inpt[6:])
-    elif args[0] == "alert":
+      
+    elif ( cmd == "alert" ):
       if handleAlert(inpt[6:]) == -1:
         usage()
-    elif args[0] != "quit":
+        
+    elif ( cmd != "quit" ):
       print("Invalid Input")
       usage()
+      
     print(">> ", end = ' ')
     inpt = input()
     
