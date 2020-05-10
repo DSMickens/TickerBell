@@ -7,30 +7,47 @@ from Price import *
 
 def usage():
   ''' Prints all usages of TickerBell '''
-  print("")
+  print()
   print("USAGE:")
   print("    quit")
   print("    price [ticker]")
-  print("    alert create [ticker] [price]")
+  print("    alert create [ticker] [price] less/more (optional) on/off (optional)")
+  print("    alert delete [ID/ticker]")
+  print("    alert on/off  [ID]")
+  print("    alert print")
   print("    alert start")
   print("    alert stop")
-  print("    alert print")
-  print("")
+  print("    alert mode cli/email/text [on/off]")
+  print("    alert email add/remove [address]")
+  print("    alert text add/remove [phone number] [carrier (spaces removed)]")
+  print()
+
+def printBanner():
+  print()
+  print("         __________                           _____               ")
+  print("        |___    ___|                         |  _  \        _  _  ")
+  print("            |  | _   ___  _  __  ____   ____ | | | |  ____ | || | ") 
+  print("            |  ||_| / __|| |/ / / _  \ / __ \| |_| / / _  \| || | ")
+  print("            |  | _ | |   |   / | |_| || | |_||  _ | | |_| || || | ")
+  print("            |  || || |   |   \ | ____|| |    | | | \| ____|| || | ")
+  print("            |  || || |__ | |\ \| \___ | |    | |_| || \___ | || | ")
+  print("            |__||_| \___||_| \_\\\____||_|    |_____/ \____||_||_| ")
+  print()
 
 def main():
   # Introduction Message and Input
-  print("*****  Welcome to TickerBell  *****\n")
+  printBanner()
   usage()
   print(">> ", end = ' ')
-  inpt = input()
+  inpt = input().strip()
   
   # Input Loop
   while inpt != "quit":
     args = inpt.split(' ')
     if args[0] == "price":
-      printPrice(inpt)
+      printPrice(inpt[6:])
     elif args[0] == "alert":
-      if handleAlert(inpt) == -1:
+      if handleAlert(inpt[6:]) == -1:
         usage()
     elif args[0] != "quit":
       print("Invalid Input")
