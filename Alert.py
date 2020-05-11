@@ -194,18 +194,6 @@ def createAlert(inpt):
 
   #create the alert entry in the dictionary
   alerts[ID] = [ticker, price, isLess, isOn]
- 
-def printAlerts():
-  """ Prints contents of dictionary param (alerts) in a easy to read format"""
-  global alerts
-  print("|   {0}   | {1} |    {2}    | {3} |".format("ID", "Ticker", "Trigger", "Status"))
-  print("|--------+--------+---------------+--------|")
-  for key, value in alerts.items():
-    ticker = value[0]
-    price = value[1] 
-    operator = "<=" if value[2] else ">="
-    status = "on" if value[3] else "off"
-    print("| {0:<6d} |  {1:<4}  |  {2} {3:<9.4f} |  {4:>3}   |".format(key, ticker, operator, price, status))
 
 def startAlert():
   """Begins a new process to run and check for alerts constantly."""
@@ -217,7 +205,7 @@ def startAlert():
   alertProcess = Process(target=checkAlerts)
   alertProcess.daemon=True
   alertProcess.start()
-    
+
 def stopAlert():
   """Terminates the alertProcess."""
   global alertProcess
@@ -226,7 +214,7 @@ def stopAlert():
     alertProcess = None
   else:
     print("Alert System not currently running")
-    
+
 def toggleAlert(status, inpt):
   """
   Turns an existing alert on or off
@@ -246,7 +234,7 @@ def toggleAlert(status, inpt):
     print("Invalid ID: {0}".format(inpt))
   except KeyError:
     print("No alert with ID: {0}".format(ID))
-    
+
 def setEmail(inpt):
   """
   Adds or removes an email from the global mailing list for alerts
@@ -269,8 +257,8 @@ def setEmail(inpt):
         return
     print("That email has not been saved")
     return -1
-        
-def setText(inpt):
+   
+def setPhone(inpt):
   """
   Adds or removes a phone number from the global list of contact numbers
   
@@ -300,7 +288,7 @@ def setText(inpt):
     except ValueError:
       print("That phone number has not been saved")
       return -1
-      
+
 def setAlertMode(inpt):
   """
   turns on or off the cli/email/text alert modes
@@ -326,7 +314,42 @@ def setAlertMode(inpt):
       mode["email"] = True
     if (isOn == "off"):
       mode["email"] = False
-  
+
+def printer(inpt):
+  """prints specified alerts, emails, or phone numbers"""
+    
+  def printAlerts():
+    """ Prints contents of dictionary param (alerts) in a easy to read format"""
+    global alerts
+    print("|   {0}   | {1} |    {2}    | {3} |".format("ID", "Ticker", "Trigger", "Status"))
+    print("|--------+--------+---------------+--------|")
+    for key, value in alerts.items():
+      ticker = value[0]
+      price = value[1] 
+      operator = "<=" if value[2] else ">="
+      status = "on" if value[3] else "off"
+      print("| {0:<6d} |  {1:<4}  |  {2} {3:<9.4f} |  {4:>3}   |".format(key, ticker, operator, price, status))
+
+  def printEmails():
+    """Prints currently saved email addresses"""
+    global emails
+    for email in emails:
+      print(email)
+
+  def printPhoneNumbers():
+    """Prints currently saved phone numbers"""
+    global phoneNumbers
+    for phone in phoneNumbers:
+      number = phone.split('@')
+      print(number[0])
+
+  if (inpt == "alerts"):
+    printAlerts()
+  elif (inpt == "emails"):
+    printEmails()
+  elif (inpt == "numbers"):
+    printPhoneNumbers()
+
 def handleAlert(inpt):
   """
   takes input from TickerBell main input stream and distributes
@@ -340,7 +363,7 @@ def handleAlert(inpt):
   args = inpt.split(' ')
   cmd = args[0]
   if cmd == "print":
-    printAlerts()
+    printer(inpt[6:])
   elif cmd == "create":
     createAlert(inpt[7:])
   elif cmd == "start":
@@ -360,7 +383,7 @@ def handleAlert(inpt):
     setAlertMode(inpt[5:])
   elif cmd == "email":
     setEmail(inpt[6:])
-  elif cmd == "text":
-    setText(inpt[5:])
+  elif cmd == "phone":
+    setPhone(inpt[5:])
   else:
     print("Invalid Input")
