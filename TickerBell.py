@@ -2,8 +2,9 @@ import yfinance as yf
 import yahoo_fin.stock_info as si
 import multiprocessing
 import time
-from Alert import *
-from Price import *
+import Alert
+import Price
+import TIO
 
 def usage():
   """Prints all usages of TickerBell"""
@@ -20,6 +21,7 @@ def usage():
   print("    alert mode cli/email/text [on/off]")
   print("    alert email add/remove [address]")
   print("    alert text add/remove [phone number] [carrier (spaces removed)]")
+  print("    io import/export [filename]")
   print()
 
 def printBanner():
@@ -34,6 +36,32 @@ def printBanner():
   print("            |  || || |__ | |\ \| \___ | |    | |_| || \___ | || | ")
   print("            |__||_| \___||_| \_\\\____||_|    |_____/ \____||_||_| ")
   print()
+  
+def handleInput(inpt):
+  """
+  handles the user input line for stdin or from a file
+  
+  Params:
+  inpt (String): user input line
+  Return: fails if line can't be read in
+  """
+  args = inpt.split(' ')
+  cmd = args[0]
+  
+  if ( cmd == "price" ):
+    Price.printPrice(inpt[6:])
+      
+  elif ( cmd == "alert" ):
+    if Alert.handleAlert(inpt[6:]) == -1:
+      usage()
+
+  elif ( cmd == "io" ):
+    TIO.handleIO(inpt[3:])
+      
+  elif ( cmd != "quit" ):
+    print("Invalid Input")
+    usage()
+  
 
 def main():
 
@@ -46,22 +74,10 @@ def main():
   # Input Loop
   while inpt != "quit":
   
-    args = inpt.split(' ')
-    cmd = args[0]
-    
-    if ( cmd == "price" ):
-      printPrice(inpt[6:])
-      
-    elif ( cmd == "alert" ):
-      if handleAlert(inpt[6:]) == -1:
-        usage()
-        
-    elif ( cmd != "quit" ):
-      print("Invalid Input")
-      usage()
+    handleInput(inpt) 
       
     print(">> ", end = ' ')
-    inpt = input()
+    inpt = input().strip()
     
   print("\nThank you for using TickerBell\n")
       

@@ -13,6 +13,9 @@ alerts = {}
 mode = {"cli":True, "email":False, "text":False}
 emails = []
 phoneNumbers = []
+carriers = {"xfinity":"@vtext.com","verizon":"@vtext.com", "at&t":"@txt.att.net",
+            "tmobile":"tmomail.net", "sprint":"@messaging.sprintpcs.com",
+            "googlefi":"@msg.fi.google.com"}
 
 def checkAlerts():
   """
@@ -274,9 +277,7 @@ def setText(inpt):
   Params:
   inpt (String): User input containing the add/remove specifier, the phone number, and the carrier
   """
-  carriers = {"verizon":"@vtext.com", "at&t":"@txt.att.net", "tmobile":"tmomail.net",
-              "sprint":"@messaging.sprintpcs.com","xfinity":"@vtext.com",
-              "googlefi":"@msg.fi.google.com"}
+  global carriers
   args = inpt.split(' ')
   addOrRemove = args[0]
   try:
@@ -363,4 +364,3 @@ def handleAlert(inpt):
     setText(inpt[5:])
   else:
     print("Invalid Input")
-  

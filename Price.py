@@ -1,5 +1,4 @@
 import yahoo_fin.stock_info as si
-from TickerBell import usage
 
 def getPrice(ticker):
   """Get and return the price of a stock from the ticker"""
