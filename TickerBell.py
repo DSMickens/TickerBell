@@ -151,51 +151,50 @@ def handleInput(inpt):
   handles the user input line for stdin or from a file
   
   Params:
-  inpt (String): user input line
-  Return: fails if line can't be read in
+    inpt (String): user input line
+    Return: fails if line can't be read in
   """
   args = inpt.split(' ')
   cmd = args[0]
 
   if ( cmd == "alert" ):
-    if TAlert.handleAlert(inpt[6:]) == -1:
+    if (TAlert.handleAlert(inpt[6:]) == -1):
       usage()
-
   elif ( cmd == "io" ):
-    TIO.handleIO(inpt[3:])
-
+    if (TIO.handleIO(inpt[3:]) == -1):
+      usage()
   elif (cmd == "help" ):
     help()
-  
   elif (cmd == "info" ):
-    TInfo.infoHandler(inpt[5:])
-    
+    if (TInfo.infoHandler(inpt[5:]) == -1):
+      usage()
   elif (cmd == "usage" ):
     usage()
-  
   elif (cmd == "position" ):
-    TPosition.positionHandler(inpt[9:])
-      
+    if (TPosition.positionHandler(inpt[9:]) == -1):
+      usage()
   elif ( cmd != "quit" ):
-    print("Invalid Command: {0}".format(cmd))
+    print("Invalid TickerBell Command: {0}".format(cmd))
     usage()
   
 def main():
-  # Introduction Message and Input
+            # Introduction Banner
   printBanner()
+            # Usage Report
   usage()
+            # Input Prompt
   print(">> ", end = ' ')
-
+            # Initial Input Received
   inpt = input().strip()
-  
-  # Input Loop
+            # Input Loop
   while inpt != "quit":
-  
+            # Handle Input
     handleInput(inpt) 
-      
+            # Input Reprompt
     print(">> ", end = ' ')
+            # User Input
     inpt = input().strip()
-    
+            #Exit Message
   print("\nThank you for using TickerBell\n")
       
 if __name__ == "__main__":

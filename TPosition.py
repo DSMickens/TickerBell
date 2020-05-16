@@ -11,24 +11,24 @@ def updatePosition(inpt):
   """
   args = inpt.split(' ')
   if (len(args) != 3):
-    print("Invalid number of arguments to record position")
-    return -1
+    print("Invalid number of arguments: {0}".format(len(args)))
+    return
   try:
     ticker = args[0]
     si.get_live_price(ticker)
   except:
     print("Invalid ticker symbol: {0}".format(ticker))
-    return -1
+    return
   try:
     price = float(args[1])
   except ValueError:
     print("Invalid price: {0}".format(args[1]))
-    return -1
+    return
   try:
     qty = int(args[2])
   except ValueError:
     print("Invalid quantity: {0}".format(args[2]))
-    return -1
+    return
     
   Positions[ticker] = [price, qty]
   
@@ -44,7 +44,7 @@ def removePosition(inpt):
     del Positions[ticker]
   except:
     print("Invalid ticker symbol: {0}".format(ticker))
-    return -1
+    return
 
 def printPositions(inpt = None):
   """
@@ -70,7 +70,7 @@ def printPositions(inpt = None):
       print("|----------+--------------+----------|")
       print("|{0:^10}|  {1:<10.4f}  |  {2:<6}  |".format(ticker, price, quantity))
     except KeyError:
-      print("No position with that ticker is being held")
+      print("No position with ticker {0} is being held".format(ticker))
       
 def positionStatus(inpt = None):
   """
@@ -104,7 +104,7 @@ def positionStatus(inpt = None):
       print("|----------+----------+--------------+------------|")
       print("|{0:^10}|  {1:<6}  |  ${2:<8.4f}   | {3:>8.4}% |".format(ticker, quantity, pl, percent))
     except KeyError:
-      print("No Position with that ticker is being held")
+      print("No Position with ticker {0} is being held".format(ticker))
       
 def positionHandler(inpt):
   """
@@ -120,7 +120,7 @@ def positionHandler(inpt):
     updatePosition(inpt[4:])
   elif (cmd == "update"):
     if args[1] not in Positions:
-      print("A position in that stock was not currently being held.")
+      print("A position in stock {0} was not currently being held.".format(args[1]))
       print("Your update command has been changed to an add command.")
     updatePosition(inpt[7:])
   elif (cmd == "remove"):
@@ -136,5 +136,6 @@ def positionHandler(inpt):
     else:
       positionStatus(inpt[7:])
   else:
-    print("Invalid command: {0}".format(cmd))
+    print("Invalid Position Command: {0}".format(cmd))
     return -1
+    

@@ -2,6 +2,7 @@ import yfinance as yf
 import yahoo_fin.stock_info as si
 import smtplib
 import ssl
+import TickerBell
 from multiprocessing import Process
 from time import sleep, time
 from random import seed
@@ -23,7 +24,7 @@ def checkAlerts():
   and sends an alert via cli/email/text if the price of the stock is hit.
   
   Params:
-  alerts (Dictionary{int:[string, float, bool, bool]}: a dictionary of stock alerts
+    alerts (Dictionary{int:[string, float, bool, bool]}: a dictionary of stock alerts
   """
   def printAlert(ticker, price):
     """
@@ -32,8 +33,8 @@ def checkAlerts():
     the user has previously made for the 'mode' global
   
     Params:
-    value ([string, float, bool, bool]: a dictionary entry value for the alert 
-    price (float): the current price of the stock
+      value ([string, float, bool, bool]: a dictionary entry value for the alert 
+      price (float): the current price of the stock
     """
     #set up server for email/text message
     port = 465
@@ -105,9 +106,7 @@ def deleteAlert(inpt):
   deletes a specified alert from the dictionary of alerts by it's key, ID
    
   Params:
-  inpt (string): the ID of the alert to delete
-   
-  Return -1 on failure
+    inpt (string): the ID of the alert to delete
   """
   global alerts
   delete = []
@@ -115,12 +114,12 @@ def deleteAlert(inpt):
     ID = int(inpt)
     del alerts[ID]
   except KeyError:
-    print("ID does not exist")
-    return -1
+    print("ID: {0} does not exist".format(ID))
   except ValueError:
     foundAlert = False
     for key, value in alerts.items():
       if (value[0] == inpt):
+        #cannot delete keys from dictionary while iterating, keep track and delete later
         delete.append(key)
     if len(delete) == 0:
       print("No alerts for ticker: {0} found".format(inpt))
@@ -133,7 +132,7 @@ def createAlert(inpt):
   Takes the alert command input and adds the fields to the alert dictionary
   
   Params:
-  inpt (string): user input for creating alerts
+    inpt (string): user input for creating alerts
   """  
   #using global alerts
   global alerts
@@ -158,21 +157,19 @@ def createAlert(inpt):
   
   #if number of arguments is not in the acceptable range of arguments, fail
   if (len(args) > 4 or len(args) < 2):
-    print("Invalid number of input arguments")
-    return -1
-    
+    print("Invalid number of input arguments: {0}".format(len(args)))
+    return
   #if ticker symbol or price are invalid, fail
   try:
     yf.Ticker(args[0])
-    #separate input arguments
     ticker = args[0]
     price = float(args[1])
   except ValueError:
     print("Invalid price: {0}".format(args[1]))
-    return -1
+    return
   except:
     print("Invalid ticker symbol: {0}".format(args[0]))
-    return -1 
+    return
     
   #if optional isLess argument is invalid, fail
   if (len(args) >= 3):
@@ -181,7 +178,7 @@ def createAlert(inpt):
       isLess = False
     elif isLessString not in ["less", "fewer", "fewer than", "less than", "<", "<="]:
       print("Invalid argument: {0}".format(isLessString))
-      return -1
+      return
 
   #if optional isOn argument is invalid, fail
   if (len(args) == 4):
@@ -190,7 +187,7 @@ def createAlert(inpt):
       isOn = False
     elif (isOnString != "on"):
       print("Invalid argument: {0}".format(isOnString))
-      return -1
+      return
 
   #create the alert entry in the dictionary
   alerts[ID] = [ticker, price, isLess, isOn]
@@ -220,8 +217,8 @@ def toggleAlert(status, inpt):
   Turns an existing alert on or off
   
   Params:
-  status (boolean): True if alert should be on, False if not
-  inpt (string): input string containing the ID of the alert to change
+    status (boolean): True if alert should be on, False if not
+    inpt (string): input string containing the ID of the alert to change
   """
   global alerts
   try:
@@ -231,23 +228,23 @@ def toggleAlert(status, inpt):
     else:
       alerts[ID][3] = False
   except ValueError:
-    print("Invalid ID: {0}".format(inpt))
+    print("Invalid ID: {0}. Use 'alert print alerts' to check IDs.".format(inpt))
   except KeyError:
-    print("No alert with ID: {0}".format(ID))
+    print("No alert with ID: {0} Use 'alert print alerts' to check IDs.".format(ID))
 
 def setEmail(inpt):
   """
   Adds or removes an email from the global mailing list for alerts
   
   Params:
-  inpt (String): User input containing the add/remove specifier and the email address to add/remove
+    inpt (String): User input containing the add/remove specifier and the email address to add/remove
   """
   args = inpt.split(' ')
   addOrRemove = args[0]
   email = args[1]
   if (len(args) != 2):
-    print("Invalid number of arguments")
-    return -1
+    print("Invalid number of arguments: {0}".format(len(args)))
+    return
   if addOrRemove == "add":
     emails.append(email)
   elif addOrRemove == "remove":
@@ -256,14 +253,14 @@ def setEmail(inpt):
         emails.remove(item)
         return
     print("That email has not been saved")
-    return -1
+    return
    
 def setPhone(inpt):
   """
   Adds or removes a phone number from the global list of contact numbers
   
   Params:
-  inpt (String): User input containing the add/remove specifier, the phone number, and the carrier
+    inpt (String): User input containing the add/remove specifier, the phone number, and the carrier
   """
   global carriers
   args = inpt.split(' ')
@@ -273,13 +270,13 @@ def setPhone(inpt):
     carrier = carriers[args[2]]
   except ValueError:
     print("Invalid number: ".format(args[1]))
-    return -1
+    return
   except KeyError:
     print("Invalid carrier: ".format(args[2]))
-    return -1
+    return
   if (len(args) != 3):
     print("Invalid number of arguments: {0}".format(args.len()))
-    return -1
+    return
   if (addOrRemove == "add"):
     phoneNumbers.append(number + carrier)
   elif (addOrRemove == "remove"):
@@ -287,14 +284,14 @@ def setPhone(inpt):
       phoneNumbers.remove(number + carrier)
     except ValueError:
       print("That phone number has not been saved")
-      return -1
+      return
 
 def setAlertMode(inpt):
   """
   turns on or off the cli/email/text alert modes
   
   Params:
-  inpt (String): user input for alert mode specifiers
+    inpt (String): user input for alert mode specifiers
   """
   args = inpt.split(' ')
   inputMode = args[0].lower()
@@ -316,7 +313,12 @@ def setAlertMode(inpt):
       mode["email"] = False
 
 def printer(inpt):
-  """prints specified alerts, emails, or phone numbers"""
+  """
+  prints specified alerts, emails, or phone numbers
+  
+  Params
+    inpt (String) - user input for printing specifications
+  """
     
   def printAlerts():
     """ Prints contents of dictionary param (alerts) in a easy to read format"""
@@ -349,15 +351,21 @@ def printer(inpt):
     printEmails()
   elif (inpt == "numbers"):
     printPhoneNumbers()
+  else:
+    print("Invalid selection: {0}".format(inpt))
 
 def handleAlert(inpt):
   """
   takes input from TickerBell main input stream and distributes
   work across Alert module functions.
+  
+  Params:
+    inpt (String) - input for the alert function
   """
   global alerts
   args = inpt.split(' ')
   cmd = args[0]
+  
   if cmd == "print":
     printer(inpt[6:])
   elif cmd == "create":
@@ -382,4 +390,5 @@ def handleAlert(inpt):
   elif cmd == "phone":
     setPhone(inpt[5:])
   else:
-    print("Invalid Input")
+    print("Invalid Alert Command: {0}".format(inpt))
+    return -1

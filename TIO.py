@@ -8,13 +8,13 @@ def importState(filename):
   normal TickerBell commands to import file
   
   Params:
-  filename (String): the name of the import file
+    filename (String): the name of the import file
   """
   try:
     fp = open(filename)
   except:
     print("Could not open file: {0}".format(filename))
-    return -1
+    return
   
   for line in fp:
     line = line.strip()
@@ -28,13 +28,13 @@ def exportState(filename):
   with TickerBell commands to enable importing later.
   
   Params:
-  filename (String): the name of the export file
+    filename (String): the name of the export file
   """
   try:
     fp = open(filename, 'w')
   except:
     print("Could not open file: {0}".format(filename))
-    return -1
+    return
   
   #exporting alerts
   for key, value in TAlert.alerts.items():
@@ -90,5 +90,6 @@ def handleIO(inpt):
   elif (cmd == "export"):
     exportState(filename)
   else:
-    print("Invalid IO Arguments")
+    print("Invalid IO Command: {0}".format(inpt))
     return -1
+    
