@@ -1,5 +1,6 @@
 import TickerBell
-import Alert
+import TAlert
+import TPosition
 
 def importState(filename):
   """
@@ -36,7 +37,7 @@ def exportState(filename):
     return -1
   
   #exporting alerts
-  for key, value in Alert.alerts.items():
+  for key, value in TAlert.alerts.items():
     ticker = value[0]
     price = value[1]
     trigger = "less" if value[2] else "more"
@@ -44,17 +45,17 @@ def exportState(filename):
     fp.write("alert create {0} {1} {2} {3}\n".format(ticker, price, trigger, status))
   
   #exporting mode status
-  for key, value in Alert.mode.items():
+  for key, value in TAlert.mode.items():
     mode = key
     status = "on" if value else "off"
     fp.write("alert mode {0} {1}\n".format(mode, status))
   
   #exporting emails
-  for email in Alert.emails:
+  for email in TAlert.emails:
     fp.write("alert email add {0}\n".format(email))
   
   #exporting phone Numbers
-  for phone in Alert.phoneNumbers:
+  for phone in TAlert.phoneNumbers:
     address = phone.split('@')
     number = address[0]
     gate = "@" + address[1]
@@ -65,9 +66,22 @@ def exportState(filename):
     if (carrier is not None):
       fp.write("alert text add {0} {1}\n".format(number, carrier))
   
+  #exporting Positions
+  for key, value in TPosition.Positions.items():
+    ticker = key
+    price = value[0]
+    quantity = value[1]
+    fp.write("position add {0} {1} {2}".format(ticker, price, quantity))
+  
   fp.close()
 
 def handleIO(inpt):
+  """
+  parses user input and distributes work over TIO functions
+  
+  Params:
+    inpt (String): user input commands
+  """
   args = inpt.split(' ')
   cmd = args[0]
   filename = args[1]

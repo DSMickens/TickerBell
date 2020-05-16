@@ -2,9 +2,11 @@ import yfinance as yf
 import yahoo_fin.stock_info as si
 import multiprocessing
 import time
-import Alert
-import Price
+import TAlert
+import TPosition
 import TIO
+import TInfo
+#import imaplib
 
 def usage():
   """Prints all usages of TickerBell"""
@@ -19,11 +21,14 @@ def usage():
       alert mode cli/email/text [on/off]
       alert email add/remove [address]
       alert phone add/remove [phone number] [carrier (spaces removed)]
+      info data [ticker]
+      info price [ticker] open/close (optional)
+      info volume [ticker]
       io import/export [filename]
       position add/update [ticker] [price] [quantity]
       position remove [ticker]
+      position print
       position status [ticker] (optional)
-      price [ticker]
       help
       usage
       quit
@@ -74,6 +79,23 @@ def help():
           phone number  - the phone number to save or delete
           carrier       - the service carrier for the phone number with all spaces removed
   
+  INFO:\n
+      The info command lets you get some info about specified stocks
+  \n    PRICE\n
+          price lets you get the price at certain times based on specified arguments
+          It requires one parameter and has two optional parameters\n
+          ticker - the ticker symbol of the stock to check
+          open/close/extended - optional. If given, the price at the most recent open,
+                                close, or current extended hours price will be given.
+          diff - optional. Will show the difference between the chosen price and the price 
+                 at the most recent open.
+        VOLUME\n
+          volume lets you get volume information for a stock
+          It requires one parameter and has one optional parameter\n
+          ticker - the ticker symbol of the stock to check.
+          average - optional. Will return the average volume for this stock instead
+                    of the current day's volume.
+  
   IO:\n
       The io command lets you manage input/output with files
   \n    IMPORT/EXPORT\n
@@ -114,14 +136,14 @@ def help():
 def printBanner():
   """prints the TickerBell welcome banner""" 
   print("""
-           __________                           _____               
-          |___    ___|                         |  _  \        _  _  
-              |  | _   ___  _  __  ____   ____ | | | |  ____ | || |  
-              |  ||_| / __|| |/ / / _  \ / __ \| |_| / / _  \| || | 
-              |  | _ | |   |   / | |_| || | |_||  _ | | |_| || || | 
-              |  || || |   |   \ | ____|| |    | | | \| ____|| || | 
-              |  || || |__ | |\ \| \___ | |    | |_| || \___ | || | 
-              |__||_| \___||_| \_\\\____||_|    |_____/ \____||_||_| 
+           __________                          _____               
+          |___    ___|                        |  _  \        _  _  
+              |  | _   ___  _  __  ____   ___ | | | |  ____ | || |  
+              |  ||_| / __|| |/ / / _  \ /   \| |_| / / _  \| || | 
+              |  | _ | |   |   / | |_| || ||_||  _ | | |_| || || | 
+              |  || || |   |   \ | ____|| |   | | | \| ____|| || | 
+              |  || || |__ | |\ \| \___ | |   | |_| || \___ | || | 
+              |__||_| \___||_| \_\\\____||_|   |_____/ \____||_||_| 
   """)
   
 def handleInput(inpt):
@@ -134,12 +156,9 @@ def handleInput(inpt):
   """
   args = inpt.split(' ')
   cmd = args[0]
-  
-  if ( cmd == "price" ):
-    Price.printPrice(inpt[6:])
-      
-  elif ( cmd == "alert" ):
-    if Alert.handleAlert(inpt[6:]) == -1:
+
+  if ( cmd == "alert" ):
+    if TAlert.handleAlert(inpt[6:]) == -1:
       usage()
 
   elif ( cmd == "io" ):
@@ -147,12 +166,18 @@ def handleInput(inpt):
 
   elif (cmd == "help" ):
     help()
+  
+  elif (cmd == "info" ):
+    TInfo.infoHandler(inpt[5:])
     
   elif (cmd == "usage" ):
     usage()
+  
+  elif (cmd == "position" ):
+    TPosition.positionHandler(inpt[9:])
       
   elif ( cmd != "quit" ):
-    print("Invalid Input")
+    print("Invalid Command: {0}".format(cmd))
     usage()
   
 def main():
@@ -160,6 +185,7 @@ def main():
   printBanner()
   usage()
   print(">> ", end = ' ')
+
   inpt = input().strip()
   
   # Input Loop

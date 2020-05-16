@@ -353,11 +353,7 @@ def printer(inpt):
 def handleAlert(inpt):
   """
   takes input from TickerBell main input stream and distributes
-  work across Alert module functions. Alert command has multiple 
-  sub commands (start, stop, create) 
-  
-  Params:
-  alerts (Dictionary{string:float}: a dictionary of stock:prices alerts
+  work across Alert module functions.
   """
   global alerts
   args = inpt.split(' ')
